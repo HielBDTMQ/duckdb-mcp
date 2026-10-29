@@ -1,0 +1,33 @@
+[project]
+name = "duckdb-mcp"
+version = "0.1.0"
+description = "Minimal MCP server exposing DuckDB SQL tools to MCP clients"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "duckdb>=2.0.0",
+    "mcp[cli]>=2.3.0",
+    "pandas>=3.1.0",
+    "tabulate>=0.10.0",
+]
+
+[project.scripts]
+duckdb-mcp="duckdb_mcp.server:main"
+
+[build-system]
+requires = ["uv_build>=0.8"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.17.3",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+# E/F = pycodestyle/pyflakes (flake8 core), I = isort,
+# UP = pyupgrade, B = bugbear, SIM = simplify
