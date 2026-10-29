@@ -5,7 +5,7 @@ A minimal [MCP](https://modelcontextprotocol.io/) server exposing DuckDB SQL too
 ## Install
 
 ```bash
-git clone https://github.com/HielBDTMIQ/duckdb-mcp && cd duckdb-mcp
+git clone https://github.com/HielBDTMQ/duckdb-mcp && cd duckdb-mcp
 uv sync
 ```
 
