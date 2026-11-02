@@ -24,7 +24,8 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` and add a
   "mcpServers": {
     "duckdb": {
       "command": "/absolute/path/to/uv",
-      "args": ["--directory", "/absolute/path/to/duckdb-mcp", "run", "duckdb-mcp"]
+      "args": ["--directory", "/absolute/path/to/duckdb-mcp", "run", "duckdb-mcp"],
+      "env": { "DUCKDB_MCP_ROOT": "/absolute/path/to/your/data" }
     }
   }
 }
@@ -36,18 +37,22 @@ Fully quit (Cmd-Q) and restart Claude Desktop. The server shows as "running" und
 
 ## Tools
 
-- `query(sql, db_path)` — run SQL, return markdown table (capped at 500 rows)
+- `query(sql, db_path)` — run SQL, return markdown table (capped at 500 rows); database files are read-only
 - `list_tables(db_path)` — list all tables in a .duckdb file (read-only)
 - `describe(table, db_path)` — show column names, types and nullability (read-only)
 
 Pass absolute paths for `db_path`. `list_tables` and `describe` fail if the file does not exist instead of creating an empty database.
 
+## Sandbox
+
+The model only gets access to one folder: `DUCKDB_MCP_ROOT`. It defaults to the working directory, which is the repo itself when started with `uv --directory`.
+
+- `db_path` must be inside that folder (`..` and symlinks are resolved first).
+- DuckDB runs with `enable_external_access = false` and `allowed_directories` set to that folder, so `read_csv`, `glob`, `read_text`, `ATTACH`, `COPY ... TO` and `INSTALL` cannot reach anything outside it. `lock_configuration = true` stops the model from turning this off with `SET`.
+- Database files are opened read-only. Only `:memory:` accepts `CREATE` and `INSERT`.
+
 ## Example prompt
 
 > "I have a DuckDB file at /path/to/sales.duckdb. What's the top region by revenue in Q3?"
-
-## Security note
-
-`query` runs arbitrary SQL with your user's permissions. DuckDB can read any file you can (`read_csv`, `glob`, ...) and can write to `db_path`. Use it on local data you trust; it is not meant to be exposed to untrusted clients.
 
 Built by [DatomIQ](https://datomiq.nl).
